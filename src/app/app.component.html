@@ -1,0 +1,127 @@
+<main class="main">
+  <div class="content">
+    <div class="left-side">
+	<h1 class="Bauobjektverwaltung-title">Bauobjektverwaltung</h1>
+	  <button (click)="onButtonClickRefresh()">Refresh</button>
+	  <div *ngIf="bauobjektService.online != true" class="status_offline">OFFLINE</div>
+	  <div *ngIf="bauobjektService.online == true" class="status_online">ONLINE</div>
+	<table>
+	  <thead>
+		<tr>
+		  <th>ID</th>
+		  <th>Name</th>
+		  <th>BW Typ</th>
+		  <th>Status</th>
+		  <th>Baujahr</th>
+		  <th>Standort</th>
+		</tr>
+	  </thead>
+	  <tbody>
+		<tr *ngFor="let bauobjekt of bauobjektService.bauobjekte$ | async" (click)="onButtonClickSelect(bauobjekt.id)">
+		  <td>{{ bauobjekt.id }}</td>
+		  <td>{{ bauobjekt.name }}</td>
+		  <td>{{ bauobjekt.bwtyp }}</td>
+		  <td>{{ bauobjekt.status }}</td>
+		  <td>{{ bauobjekt.baujahr }}</td>
+		  <td>{{ bauobjekt.standort }}</td>
+		</tr>
+	  </tbody>
+	</table>
+
+
+    </div>
+    <div class="divider" role="separator" aria-label="Divider"></div>
+    <div class="right-side">
+	
+		<div class="button-group" *ngIf="editBauobj === undefined">
+			<button (click)="onButtonClickNew()">Neues Objekt erstellen</button>
+		</div>
+		<div class="button-group" *ngIf="editBauobj !== undefined">
+			<button (click)="onButtonClickCancel()">Abbrechen</button>
+		</div>
+
+		<div *ngIf="editBauobj !== undefined">
+		<div class="edit-section">
+			<div *ngIf="editBauobj.id != -1" class="edit-header">Edit ID: {{editBauobj.id}}</div>
+			<div class="input-group">
+				<label>Name:</label>
+				<input type="text" [(ngModel)]="editBauobj.name">
+			</div>
+			<div class="input-group">
+				<label>Bauwerktyp:</label>
+				<select [(ngModel)]="editBauobj.bwtyp">
+					<option value="BRUECKENBAUWERK">BRÜCKENBAUWERK</option>
+					<option value="GALERIE_TUNNEL_OFFENE_BAUWEISE">GALERIE/TUNNEL OFFENE BAUWEISE</option>
+					<option value="LAERMSCHUTZWAND">LÄRMSCHUTZWAND</option>
+					<option value="MAUER_STUETZKONSTRUKTION">MAUER STUETZKONSTRUKTION</option>
+					<option value="SCHUTZBAUTEN">SCHUTZBAUTEN</option>
+					<option value="STREUGUTSILO">STREUGUTSILO</option>
+					<option value="TUNNEL_GESCHLOSSENE_BAUWEISE">TUNNEL GESCHLOSSENE BAUWEISE</option>
+					<option value="WANNENBAUWERK">WANNENBAUWERK</option>
+					<option value="WEGWEISERBRUECK">WEGWEISERBRUECK</option>
+				</select>
+			</div>
+			<div class="input-group">
+				<label>Status:</label>
+				<select [(ngModel)]="editBauobj.status">
+					<option value="PLANUNG">PLANUNG</option>
+					<option value="BAU">BAU</option>
+					<option value="ERHALTEN">ERHALTEN</option>
+				</select>
+			</div>
+			<div class="input-group">
+				<label>Baujahr:</label>
+				<input type="number" [(ngModel)]="editBauobj.baujahr">
+			</div>
+			<div class="input-group">
+				<label>Standort:</label>
+				<select [(ngModel)]="editBauobj.standort">
+					<option value="Burgenland">Burgenland</option>
+					<option value="Kärnten">Kärnten</option>
+					<option value="Steiermark">Steiermark</option>
+					<option value="Niederösterreich">Niederösterreich</option>
+					<option value="Oberösterreich">Oberösterreich</option>
+					<option value="Salzburg">Salzburg</option>
+					<option value="Tirol">Tirol</option>
+					<option value="Vorarlberg">Vorarlberg</option>
+					<option value="Wien">Wien</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="button-group">
+			<button (click)="onButtonClickEdit()">Änderung speichern</button>
+			
+			<button *ngIf="editBauobj.id != -1" (click)="onButtonClickDel()">Objekt löschen</button>
+		</div>
+
+		<div *ngIf="bauobjektService.bauwerkKomponente$ !== undefined && editBauobj.id != -1" class="component-section">
+			<div class="section-header">BauwerkKomponenten</div>
+			<ul class="component-list">
+				<li *ngFor="let bwk of bauobjektService.bauwerkKomponente$ | async">
+					<button (click)="OnBauwerkKomponenteRemove(bwk)">{{bwk}}</button>
+				</li>
+			</ul>
+			<select class='select-option' name="BauwerkKomponentenListe" size="13" [(ngModel)]="selectedbwk" (change)='onOptionsSelectedBwk($event)'>
+				<option value="UNTERBAU_PFEILER">ABDICHTUNG BITUMENBAHNEN</option>
+				<option value="UNTERBAU_PFEILER">ABDICHTUNG FLUESSIGABDICHTUNG</option>
+				<option value="UNTERBAU_PFEILER">ENTWAESSERUNG GEWAESSERSCHUTZANLAGE</option>
+				<option value="UNTERBAU_WIDERLAGER">ENTWAESSERUNG KANAL</option>				
+				<option value="UNTERBAU_PFEILER">FAHRBAHNAUFBAU BELAG BETON</option>
+				<option value="UNTERBAU_WIDERLAGER">FAHRBAHNAUFBAU BELAG DRAINASPHALT</option>
+				<option value="LAGER_BETONGELENK">LAGER BETONGELENK</option>
+				<option value="LAGER_BETONSTELZLAGER">LAGER BETONSTELZLAGER</option>
+				<option value="UEBERBAU_HOLZ">UEBERBAU HOLZ</option>
+				<option value="UNTERBAU_PFEILER">UNTERBAU PFEILER</option>
+				<option value="UEBERBAU_STAHBETON">UEBERBAU STAHLBETON</option>
+				<option value="UNTERBAU_WIDERLAGER">RANDBALKEN ESTRICH</option>
+				<option value="UEBERBAU_STAHBETON">RANDBALKEN PFLASTER</option>	
+			</select>              
+		</div>
+	</div>
+
+    </div>
+  </div>
+</main>
+
+	
